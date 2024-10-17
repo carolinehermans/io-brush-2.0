@@ -1,16 +1,76 @@
 const canvas = document.getElementById("drawingCanvas");
 const ctx = canvas.getContext("2d");
 let isDrawing = false;
-let img = new Image();
+let sourceImg = new Image();
+const maskImg = new Image();
+
+const imgW = 100;
 
 // Set canvas size
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Load the image that will follow the path
-img.src = "./test-img.png";
+sourceImg.src = "./test-img.png";
+maskImg.src = "./brush-stroke.png"; // Replace with your mask (B&W) image URL
 
-// Set image width
+let compositeImg;
+
+// Helper function to apply mask and create composite image
+function createMaskedImage(sourceImage, maskImage) {
+  // Create an offscreen canvas for the result
+  const offscreenCanvas = document.createElement("canvas");
+  const offscreenCtx = offscreenCanvas.getContext("2d");
+  offscreenCanvas.width = imgW;
+  offscreenCanvas.height = imgW;
+
+  // Draw the mask onto an offscreen canvas
+  const maskCanvas = document.createElement("canvas");
+  const maskCtx = maskCanvas.getContext("2d");
+  maskCanvas.width = imgW;
+  maskCanvas.height = imgW;
+  maskCtx.drawImage(maskImage, 0, 0, imgW, imgW);
+
+  const maskData = maskCtx.getImageData(0, 0, imgW, imgW);
+
+  // Draw the source image on another offscreen canvas
+  const sourceCanvas = document.createElement("canvas");
+  const sourceCtx = sourceCanvas.getContext("2d");
+  sourceCanvas.width = imgW;
+  sourceCanvas.height = imgW;
+  sourceCtx.drawImage(sourceImage, 0, 0, imgW, imgW);
+
+  const sourceData = sourceCtx.getImageData(0, 0, imgW, imgW);
+
+  // Loop through the mask image pixels and apply the mask as transparency
+  for (let i = 0; i < maskData.data.length; i += 4) {
+    const red = maskData.data[i];
+    const green = maskData.data[i + 1];
+    const blue = maskData.data[i + 2];
+
+    // If the mask pixel is white or near white, set the source pixel to be transparent
+    if (red > 180 && green > 180 && blue > 180) {
+      sourceData.data[i + 3] = 0; // Set alpha to 0 (fully transparent)
+    }
+  }
+
+  // Put the modified source image onto the offscreen canvas
+  offscreenCtx.putImageData(sourceData, 0, 0);
+
+  return offscreenCanvas;
+}
+
+Promise.all([
+  new Promise((resolve) => {
+    sourceImg.onload = resolve;
+  }),
+  new Promise((resolve) => {
+    maskImg.onload = resolve;
+  }),
+]).then(() => {
+  // Create the composite image with the mask applied
+  compositeImg = createMaskedImage(sourceImg, maskImg);
+});
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
@@ -27,13 +87,13 @@ function startDrawing(event) {
 }
 
 function draw(event) {
-  if (!isDrawing) return;
+  if (!isDrawing || !compositeImg) return;
 
   // Handle touch/mouse positions
   const { x, y } = getCoordinates(event);
 
-  // Draw the image at the current coordinates
-  ctx.drawImage(img, x - img.width / 2, y - img.height / 2);
+  // Draw the composite image at the current coordinates without overwriting other content
+  ctx.drawImage(compositeImg, x - imgW / 2, y - imgW / 2);
 }
 
 function stopDrawing() {
