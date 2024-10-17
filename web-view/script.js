@@ -11,7 +11,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Load the image that will follow the path
-sourceImg.src = "./test-img.png";
+sourceImg.src = "./test-img-2.png";
 maskImg.src = "./brush-stroke.png"; // Replace with your mask (B&W) image URL
 
 let compositeImg;
