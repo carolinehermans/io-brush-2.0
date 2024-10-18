@@ -10,8 +10,7 @@ const imgW = 100;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Load the image that will follow the path
-sourceImg.src = "./test-img-2.png";
+// Load the mask image
 maskImg.src = "./brush-stroke.png"; // Replace with your mask (B&W) image URL
 
 let compositeImg;
@@ -60,17 +59,38 @@ function createMaskedImage(sourceImage, maskImage) {
   return offscreenCanvas;
 }
 
-Promise.all([
-  new Promise((resolve) => {
-    sourceImg.onload = resolve;
-  }),
-  new Promise((resolve) => {
-    maskImg.onload = resolve;
-  }),
-]).then(() => {
-  // Create the composite image with the mask applied
-  compositeImg = createMaskedImage(sourceImg, maskImg);
-});
+// Function to fetch the image from the server
+function fetchImage() {
+  fetch('http://127.0.0.1:5000/api/tempImage')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      // Create a local URL for the image blob
+      sourceImg.src = URL.createObjectURL(blob);
+
+      // Wait for the image to load
+      return new Promise((resolve) => {
+        sourceImg.onload = resolve;
+      });
+    })
+    .then(() => {
+      // Create the composite image with the mask applied
+      compositeImg = createMaskedImage(sourceImg, maskImg);
+    })
+    .catch(error => {
+      console.error('There was a problem with the fetch operation:', error);
+    });
+}
+
+// Initial image fetch
+fetchImage();
+
+// Set interval to fetch the image every 5 seconds (5000 ms)
+setInterval(fetchImage, 5000);
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
