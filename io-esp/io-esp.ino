@@ -9,6 +9,7 @@
 
 #define CAMERA_MODEL_XIAO_ESP32S3 // Has PSRAM
 #define TOUCH_INT D7
+#define LED D9
 
 #include "camera_pins.h"
 #define PAYLOAD_SIZE 300000
@@ -21,7 +22,6 @@ const int camera_height = 240;
 // File Counter
 int imageCount = 1;
 bool camera_sign = false;          // Check camera status
-// bool sd_sign = false;              // Check sd status
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -40,6 +40,7 @@ bool display_is_pressed(void)
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  pinMode (LED, OUTPUT);
 
 
   // Camera pinout
@@ -95,65 +96,35 @@ void setup() {
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
-    // Serial.printf("Camera init failed with error 0x%x", err);
     return;
   }
-  // Serial.println("Camera ready");
+
   camera_sign = true; // Camera initialization check passes
 
-  // Display initialization
-  // tft.init();
-  // tft.setRotation(1);
-  // tft.fillScreen(TFT_WHITE);
+
 
 
   payload = (char *)ps_malloc(PAYLOAD_SIZE * sizeof(char));
-  if (payload == 0) {
-    // Serial.println("ERROR: can't allocated PSRAM to payload variable");
-  }
   memset(payload, 0, PAYLOAD_SIZE * sizeof(char));
 
   
 }
 
 void loop() {
+  digitalWrite(LED,LOW);
   if(camera_sign){
     // Take a photo
     fb = esp_camera_fb_get();
     if (!fb) {
-      // Serial.println("Failed to get camera frame buffer");
       return;
     }
     
     if(display_is_pressed()){
-
-      //convert to base64
-      // size_t _jpg_buf_len;
-      // uint8_t *_jpg_buf;
-      // uint8_t* _jpg_buf = fb->buf;
-      // uint32_t _jpg_buf_len = fb->len;
-      // bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
-      // Serial.println("converted to jpg");
-      // int encodedLength = Base64.encodedLength(_jpg_buf_len);
-      // Base64.encode(payload, (char *)_jpg_buf, _jpg_buf_len);
-      // int encodedLength = Base64.encodedLength(_jpg_buf_len);
-      // payload[encodedLength++] = '\n';
-      // payload[encodedLength] = 0;
-      // Serial.write(payload,strlen(payload));
-      // Serial.println(strlen(payload);
+      digitalWrite(LED,HIGH);
       Serial.write(fb->buf,fb->len);
       Serial.write("helloworld",strlen("helloworld"));
     }
   
-    // Decode JPEG images
-    // uint8_t* buf = fb->buf;
-    // uint32_t len = fb->len;
-    // tft.startWrite();
-    // tft.setAddrWindow(0, 0, camera_width, camera_height);
-    // tft.pushColors(buf, len);
-    // tft.endWrite();
-      
-    // Release image buffer
     esp_camera_fb_return(fb);
 
     delay(10);
