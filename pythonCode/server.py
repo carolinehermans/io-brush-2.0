@@ -13,10 +13,13 @@ def read_serial_data():
     data = ""
     while True:
         try:
-            base64_data = ser.readline().decode("utf-8")
+            # base64_data = ser.readline().decode("utf-8")
+            image_data = ser.read_until(b'\xff\xd9helloworld')
+            # b = ser.read(10)
+            # print(b)
             f = open("../web-view/img.jpg", "wb+")
             f.seek(0)
-            image_data = base64.b64decode(base64_data)
+            # # image_data = base64.b64decode(base64_data)
             f.write(image_data)
             print("Image received",len(image_data))
         except Exception as e:

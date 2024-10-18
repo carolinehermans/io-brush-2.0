@@ -130,22 +130,24 @@ void loop() {
       //convert to base64
       // size_t _jpg_buf_len;
       // uint8_t *_jpg_buf;
-      uint8_t* _jpg_buf = fb->buf;
-      uint32_t _jpg_buf_len = fb->len;
+      // uint8_t* _jpg_buf = fb->buf;
+      // uint32_t _jpg_buf_len = fb->len;
       // bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
       // Serial.println("converted to jpg");
       // int encodedLength = Base64.encodedLength(_jpg_buf_len);
-      Base64.encode(payload, (char *)_jpg_buf, _jpg_buf_len);
-      int encodedLength = Base64.encodedLength(_jpg_buf_len);
-      payload[encodedLength++] = '\n';
-      payload[encodedLength] = 0;
-      Serial.write(payload,strlen(payload));
+      // Base64.encode(payload, (char *)_jpg_buf, _jpg_buf_len);
+      // int encodedLength = Base64.encodedLength(_jpg_buf_len);
+      // payload[encodedLength++] = '\n';
+      // payload[encodedLength] = 0;
+      // Serial.write(payload,strlen(payload));
       // Serial.println(strlen(payload);
+      Serial.write(fb->buf,fb->len);
+      Serial.write("helloworld",strlen("helloworld"));
     }
   
     // Decode JPEG images
-    uint8_t* buf = fb->buf;
-    uint32_t len = fb->len;
+    // uint8_t* buf = fb->buf;
+    // uint32_t len = fb->len;
     // tft.startWrite();
     // tft.setAddrWindow(0, 0, camera_width, camera_height);
     // tft.pushColors(buf, len);
