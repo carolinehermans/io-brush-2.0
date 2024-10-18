@@ -56,7 +56,7 @@ function createMaskedImage(sourceImage, maskImage) {
 // Function to fetch the image from the server
 function fetchImage() {
   // fetch('http://127.0.0.1:5001/api/getImage')
-  fetch('http://127.0.0.1:5001/img.jpg')
+  fetch('./img.jpg')
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -74,7 +74,9 @@ function fetchImage() {
     })
     .then(() => {
       // Create the composite image with the mask applied
+      console.log("A")
       compositeImg = createMaskedImage(sourceImg, maskImg);
+      console.log("B")
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
