@@ -8,10 +8,58 @@
       canvas {
         margin: 0;
       }
+      @keyframes pulse {
+        0% {
+          filter: drop-shadow(2px 2px 2px white);
+        }
+        50% {
+          filter: drop-shadow(2px 2px 20px white);
+        }
+        100% {
+          filter: drop-shadow(2px 2px 2px white);
+        }
+      }
     </style>
   </head>
   <body>
-    <canvas id="drawingCanvas"></canvas>
+    <div
+      style="
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: black;
+        z-index: -1;
+      "
+    ></div>
+    <div
+      id="overlay"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image: url(./ripple.webp);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.2;
+        z-index: 0;
+      "
+    ></div>
+    <div id="container">
+      <canvas
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          animation: pulse 4s infinite;
+        "
+        id="drawingCanvas"
+      ></canvas>
+    </div>
 
     <script src="script.js"></script>
   </body>
