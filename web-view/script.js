@@ -55,7 +55,8 @@ function createMaskedImage(sourceImage, maskImage) {
 
 // Function to fetch the image from the server
 function fetchImage() {
-  fetch('http://127.0.0.1:5000/api/tempImage')
+  // fetch('http://127.0.0.1:5001/api/getImage')
+  fetch('http://127.0.0.1:5001/img.jpg')
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -84,7 +85,7 @@ function fetchImage() {
 fetchImage();
 
 // Set interval to fetch the image every 5 seconds (5000 ms)
-setInterval(fetchImage, 5000);
+setInterval(fetchImage,1);
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
